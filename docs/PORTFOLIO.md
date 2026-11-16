@@ -28,3 +28,7 @@ npm.cmd run build:demo
 ```
 
 Sirva a pasta `dist/` com um servidor HTTP estático. Não abra o HTML diretamente por `file://`, pois ele usa módulos JavaScript.
+
+## Perfis na demo
+
+A página inicial permite explorar como dono ou como mecânico. Esses botões simulam perfis usando dados fictícios; não fazem autenticação real. Criação de contas, senhas e bloqueios de acesso ficam no servidor e estão descritos em [Segurança](SECURITY.md).

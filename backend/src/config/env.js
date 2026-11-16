@@ -15,6 +15,21 @@ function loadConfig(env = process.env, loadFile = true) {
   // Preserve databases from installations created before the folder reorganization.
   const legacyDatabase = path.join(backendRoot, 'autogest.db');
   const defaultDatabase = fs.existsSync(legacyDatabase) ? legacyDatabase : 'data/autogest.db';
+  const secureCookies = env.NODE_ENV === 'production' || env.SESSION_SECURE === 'true';
+  const appOrigin = env.APP_ORIGIN || null;
+  if (appOrigin) {
+    let parsed;
+    try {
+      parsed = new URL(appOrigin);
+    } catch {
+      fail('APP_ORIGIN inválida.');
+    }
+    if (parsed.origin !== appOrigin || !['http:', 'https:'].includes(parsed.protocol))
+      fail('APP_ORIGIN deve conter somente protocolo e domínio, sem barra final.');
+    if (secureCookies && parsed.protocol !== 'https:') fail('Use HTTPS com cookies seguros.');
+  }
+  if (env.NODE_ENV === 'production' && !appOrigin)
+    fail('Configure APP_ORIGIN com o endereço HTTPS em produção.');
   return Object.freeze({
     port,
     host: env.HOST || '127.0.0.1',
@@ -24,6 +39,8 @@ function loadConfig(env = process.env, loadFile = true) {
         : path.resolve(backendRoot, env.DB_PATH || defaultDatabase),
     frontendRoot: path.resolve(backendRoot, '../frontend'),
     bodyLimit: 1024 * 1024,
+    secureCookies,
+    appOrigin,
   });
 }
 module.exports = { loadConfig };

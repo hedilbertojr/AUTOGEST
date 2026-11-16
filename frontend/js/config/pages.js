@@ -1,4 +1,6 @@
 export const pages = {
+  usuarios: ['Usuários', 'Gerencie os acessos do dono e da equipe.', '♙', 'Novo usuário'],
+  auditoria: ['Auditoria', 'Últimos eventos de acesso e administração.', '▤'],
   clientes: ['Clientes', 'Pessoas que confiam no trabalho da sua oficina.', '♙', 'Novo cliente'],
   veiculos: ['Veículos', 'Cada veículo conectado ao seu proprietário.', '◇', 'Novo veículo'],
   servicos: ['Serviços', 'Seu catálogo de serviços e preços de referência.', '⚒', 'Novo serviço'],

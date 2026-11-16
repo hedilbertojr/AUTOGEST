@@ -1,6 +1,7 @@
 import { $ } from '../core/dom.js';
 import { pages } from '../config/pages.js';
 import { renderTable } from './table.js';
+import { isAdmin } from '../core/session.js';
 export function renderView(state, page, query) {
   const p = pages[page];
   $('#title').textContent = p[0];
@@ -15,11 +16,26 @@ export function renderView(state, page, query) {
   });
   const low = state.estoque.filter((i) => i.quantidade <= i.minimo).length;
   const open = state.ordens.filter((o) => !['finalizada', 'entregue'].includes(o.status)).length;
-  $('#metrics').innerHTML = [
-    [state[page].length, 'Registros nesta seção', 'Sua operação organizada'],
-    [open, 'Ordens em execução', 'Abertas ou em andamento'],
-    [low, 'Itens para reposição', 'Quantidade no mínimo ou abaixo'],
-  ]
+  const metrics = isAdmin()
+    ? [
+        [state[page].length, 'Registros nesta seção', 'Sua operação organizada'],
+        [open, 'Ordens em execução', 'Abertas ou em andamento'],
+        [low, 'Itens para reposição', 'Quantidade no mínimo ou abaixo'],
+      ]
+    : [
+        [state.ordens.length, 'Serviços atribuídos', 'Ordens da sua conta'],
+        [
+          state.ordens.filter((o) => o.status === 'em_andamento').length,
+          'Em andamento',
+          'Serviços iniciados',
+        ],
+        [
+          state.ordens.filter((o) => o.status === 'finalizada').length,
+          'Finalizados',
+          'Aguardando entrega pelo dono',
+        ],
+      ];
+  $('#metrics').innerHTML = metrics
     .map(
       ([n, t, d]) =>
         `<article class="metric"><span>${t}</span><strong>${n}</strong><small>${d}</small></article>`,

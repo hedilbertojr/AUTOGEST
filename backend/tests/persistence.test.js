@@ -26,7 +26,7 @@ test('atualiza banco legado, preserva cadastros e reaplica inicialização sem d
     db.prepare('UPDATE servicos SET preco=12345 WHERE id=1').run();
     db.close();
     db = openDatabase(filename);
-    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 2);
+    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 3);
     assert.equal(db.prepare('SELECT count(*) n FROM servicos').get().n, 21);
     assert.equal(db.prepare('SELECT preco FROM servicos WHERE id=1').get().preco, 12345);
     assert.equal(db.prepare('PRAGMA integrity_check').get().integrity_check, 'ok');

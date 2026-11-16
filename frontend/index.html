@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="./css/style.css" />
     <script src="./js/app.js" type="module"></script>
   </head>
-  <body>
+  <body class="access-locked">
+    <section id="access-panel" class="access-panel" aria-label="Acesso ao sistema">
+      <p>Preparando acesso…</p>
+    </section>
     <aside>
       <a class="brand" href="./"
         >⚙ <span>AutoGest<small>GESTÃO DE OFICINA</small></span></a
@@ -21,6 +24,11 @@
       <header>
         <span>OFICINA / <b id="breadcrumb">CLIENTES</b></span
         ><span class="local">● SQLite local</span>
+        <div class="account-controls">
+          <span id="account-name"></span
+          ><button type="button" id="change-password" class="ghost">Alterar senha</button
+          ><button type="button" id="logout" class="secondary">Sair</button>
+        </div>
       </header>
       <main>
         <section class="demo-banner" id="demo-banner" hidden>

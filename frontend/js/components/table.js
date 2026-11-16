@@ -1,3 +1,6 @@
+import { isAdmin } from '../core/session.js';
+import { isDemo } from '../core/mode.js';
+import { usersTable } from '../features/users.js';
 import { $ } from '../core/dom.js';
 import { escapeHtml, reais, labels, badge } from '../core/format.js';
 import { pages } from '../config/pages.js';
@@ -7,6 +10,64 @@ export function renderTable(state, page, query) {
   const rows = state[page].filter((r) =>
     Object.values(r).some((v) => String(v).toLocaleLowerCase('pt-BR').includes(query)),
   );
+  if (page === 'usuarios') {
+    $('#content').innerHTML = usersTable(rows);
+    return;
+  }
+  if (page === 'auditoria') {
+    $('#content').innerHTML = rows.length
+      ? '<div class="table-wrap"><table><thead><tr><th>Data (UTC)</th><th>Usuário</th><th>Evento</th><th>Registro</th></tr></thead><tbody>' +
+        rows
+          .map(
+            (r) =>
+              '<tr><td>' +
+              escapeHtml(r.criado_em) +
+              '</td><td>' +
+              escapeHtml(r.usuario || 'Acesso não identificado') +
+              '</td><td>' +
+              escapeHtml(r.acao) +
+              '</td><td>' +
+              escapeHtml(r.alvo_id || '—') +
+              '</td></tr>',
+          )
+          .join('') +
+        '</tbody></table></div>'
+      : '<div class="empty">Nenhum evento registrado.</div>';
+    return;
+  }
+  if (!isAdmin() && page === 'ordens') {
+    $('#content').innerHTML = rows.length
+      ? '<div class="table-wrap"><table><thead><tr><th>OS</th><th>Veículo</th><th>Trabalho</th><th>Status</th><th>Ações</th></tr></thead><tbody>' +
+        rows
+          .map(
+            (r) =>
+              '<tr><td>#' +
+              r.id +
+              '</td><td>' +
+              escapeHtml([r.placa, r.marca, r.modelo].filter(Boolean).join(' · ')) +
+              '</td><td>' +
+              escapeHtml(r.diagnostico) +
+              '<ul>' +
+              (r.itens || [])
+                .map((i) => '<li>' + i.quantidade + ' × ' + escapeHtml(i.nome) + '</li>')
+                .join('') +
+              '</ul></td><td>' +
+              badge(r.status) +
+              '</td><td>' +
+              (['aberta', 'em_andamento'].includes(r.status)
+                ? button(
+                    'status',
+                    r.id,
+                    r.status === 'aberta' ? 'Iniciar serviço' : 'Finalizar serviço',
+                  )
+                : 'Aguardando o dono') +
+              '</td></tr>',
+          )
+          .join('') +
+        '</tbody></table></div>'
+      : '<div class="empty"><strong>Nenhum serviço atribuído</strong><p>O dono atribui suas ordens na seção Ordens de serviço.</p></div>';
+    return;
+  }
   const cols = {
     clientes: ['Cliente', 'Telefone', 'E-mail'],
     veiculos: ['Placa', 'Cliente', 'Veículo', 'Ano'],
@@ -73,6 +134,7 @@ export function renderTable(state, page, query) {
             '<div class="actions">' +
               (next[r.status] ? button('status', r.id, labels[next[r.status]]) : '') +
               button('whatsapp', r.id, 'Notificar') +
+              (!isDemo ? button('assign', r.id, 'Atribuir mecânico') : '') +
               (['finalizada', 'entregue'].includes(r.status) &&
               !state.notas.some((n) => n.ordem_id === r.id)
                 ? button('note', r.id, 'Gerar comprovante')

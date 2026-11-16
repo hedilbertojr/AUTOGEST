@@ -44,4 +44,4 @@ Texto vindo de registros é escapado antes de entrar em HTML. Links do WhatsApp 
 
 ## Limites atuais
 
-Uso local em uma máquina, sem autenticação, SMTP, emissão fiscal oficial ou multiempresa. O armazenamento SQLite usa uma conexão síncrona por instância. Não trate esta configuração como uma implantação pública ou como um serviço de alta concorrência.
+Uso local em uma máquina, com autenticação e perfis de acesso, sem SMTP, emissão fiscal oficial ou multiempresa. O armazenamento SQLite usa uma conexão síncrona por instância. Não trate esta configuração como uma implantação pública ou como um serviço de alta concorrência.

@@ -7,19 +7,41 @@ const fs = require('node:fs'),
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'autogest-test-'));
 const { createApp } = require('../src/app');
 const { loadConfig } = require('../src/config/env');
-const { server, db } = createApp(loadConfig({ DB_PATH: path.join(temp, 'test.db') }, false));
+const { server, db, auth } = createApp(loadConfig({ DB_PATH: path.join(temp, 'test.db') }, false));
 let base;
-const ready = new Promise((resolve) =>
-  server.listen(0, '127.0.0.1', () => {
-    base = `http://127.0.0.1:${server.address().port}`;
-    resolve();
-  }),
-);
+let cookie, csrf;
+const ready = new Promise((resolve, reject) => {
+  server.once('error', reject);
+  server.listen(0, '127.0.0.1', async () => {
+    try {
+      base = `http://127.0.0.1:${server.address().port}`;
+      await auth.firstAdmin({
+        nome: 'Admin Teste',
+        email: 'admin@example.com',
+        senha: 'Senha de testes longa 2026!',
+      });
+      const r = await fetch(base + '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'admin@example.com', senha: 'Senha de testes longa 2026!' }),
+      });
+      cookie = r.headers.get('set-cookie').split(';')[0];
+      csrf = (await r.json()).csrf;
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+});
 async function request(route, method = 'GET', body) {
   await ready;
   const r = await fetch(base + '/api/' + route, {
     method,
-    headers: body ? { 'Content-Type': 'application/json' } : {},
+    headers: {
+      Cookie: cookie,
+      'X-CSRF-Token': csrf,
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+    },
     body: body ? JSON.stringify(body) : undefined,
   });
   return { status: r.status, data: await r.json() };

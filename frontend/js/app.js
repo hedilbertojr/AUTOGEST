@@ -1,3 +1,6 @@
+import { session, isAdmin, resources } from './core/session.js';
+import { initializeAccess } from './features/access.js';
+import { createUser, userAction, assignOrder } from './features/users.js';
 import { isDemo } from './core/mode.js';
 import { renderView } from './components/dashboard.js';
 import { createBudgetEditor } from './features/budget-editor.js';
@@ -22,8 +25,12 @@ function toast(message) {
   toastTimer = setTimeout(() => ($('#toast').hidden = true), 5000);
 }
 async function refresh() {
-  const entries = await Promise.all(Object.keys(pages).map(async (k) => [k, await api(k)]));
-  state = Object.fromEntries(entries);
+  const entries = await Promise.all(resources().map(async (k) => [k, await api(k)]));
+  if (!session.user) return;
+  state = {
+    ...Object.fromEntries(Object.keys(pages).map((k) => [k, []])),
+    ...Object.fromEntries(entries),
+  };
   render();
 }
 $('#nav').innerHTML = Object.entries(pages)
@@ -43,7 +50,12 @@ $('#search').addEventListener('input', (e) => {
   renderTable();
 });
 function render() {
+  if (!resources().includes(page)) page = isAdmin() ? 'clientes' : 'ordens';
+  document
+    .querySelectorAll('[data-page]')
+    .forEach((b) => (b.hidden = !resources().includes(b.dataset.page)));
   renderView(state, page, query);
+  if (!isAdmin()) $('#new').hidden = true;
 }
 function renderTable() {
   drawTable(state, page, query);
@@ -59,6 +71,8 @@ function openModal(title, html, readOnly = false) {
 }
 $('#close').onclick = $('#cancel').onclick = () => $('#modal').close();
 $('#new').onclick = () => {
+  if (!isAdmin()) return;
+  if (page === 'usuarios') return createUser(refresh);
   editingId = null;
   let html = '';
   if (page === 'clientes')
@@ -122,6 +136,18 @@ $('#form').onsubmit = async (e) => {
 $('#content').onclick = async (e) => {
   const b = e.target.closest('[data-action]');
   if (!b || busy) return;
+  if (b.dataset.action.startsWith('user-')) {
+    try {
+      await userAction(b.dataset.action, Number(b.dataset.id), state, refresh);
+    } catch (error) {
+      toast(error.message);
+    }
+    return;
+  }
+  if (b.dataset.action === 'assign') {
+    assignOrder(Number(b.dataset.id), state.usuarios, refresh);
+    return;
+  }
   const actionPage = page;
   const id = Number(b.dataset.id),
     action = b.dataset.action;
@@ -202,8 +228,18 @@ $('#content').onclick = async (e) => {
     b.disabled = false;
   }
 };
-refresh().catch((e) => {
-  $('#content').textContent = 'Não foi possível carregar os dados: ' + e.message;
+initializeAccess(
+  async () => {
+    page = isAdmin() ? 'clientes' : 'ordens';
+    await refresh();
+  },
+  () => {
+    state = Object.fromEntries(Object.keys(pages).map((k) => [k, []]));
+    $('#content').textContent = '';
+  },
+).catch((error) => {
+  console.error(error);
+  $('#access-panel').textContent = 'Não foi possível preparar o acesso. Recarregue a página.';
 });
 
 if (isDemo) {

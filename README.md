@@ -13,8 +13,11 @@ Gestão local de oficina com Node.js 24+, SQLite persistente e interface em port
 No VS Code, abra **esta pasta `autogest`** e execute na raiz:
 
 ```powershell
+npm.cmd run admin:create
 npm.cmd start
 ```
+
+Execute `admin:create` somente no primeiro acesso. Nos próximos usos, basta `npm.cmd start`.
 
 Abra **http://127.0.0.1:3000**. Para encerrar, use `Ctrl+C`.
 
@@ -62,6 +65,12 @@ autogest/
 └── package-lock.json
 ```
 
+## Controle de acesso
+
+O dono entra como administrador e cria as contas dos mecânicos na seção Usuários. O mecânico acessa somente as OS atribuídas à sua conta, sem preços ou dados financeiros. A senha temporária deve ser trocada no primeiro login. Não há senha padrão.
+
+[Guia de acesso e segurança](docs/SECURITY.md)
+
 ## Funcionalidades
 
 - Cadastro de clientes e veículos com validações e vínculo de propriedade.
@@ -90,23 +99,26 @@ A configuração é opcional. Para mudar porta, host ou banco, copie `backend/.e
 
 O exemplo `.env.example` aponta para `data/autogest.db`, indicado para instalações novas. Não altere o caminho em uma instalação com dados sem conferir qual banco deseja abrir.
 
-A configuração padrão atende somente esta máquina. Esta versão não possui autenticação, SMTP ou emissão NF-e/NFS-e oficial; mantenha o uso local.
+O primeiro acesso exige criar o administrador pelo terminal. O sistema possui login, perfis, sessões e permissões no servidor. SMTP e emissão fiscal oficial não estão integrados. Para acesso pela internet, use backend hospedado com HTTPS; consulte docs/SECURITY.md.
 
 ## Comandos
 
-Execute na raiz `autogest`:
+Execute na raiz do projeto:
 
-| Comando                    | Finalidade                                           |
-| -------------------------- | ---------------------------------------------------- |
-| `npm.cmd start`            | Iniciar                                              |
-| `npm.cmd run dev`          | Reiniciar automaticamente após alterações no backend |
-| `npm.cmd test`             | Testar regras, API e persistência em bancos isolados |
-| `npm.cmd run check`        | Verificar sintaxe de todos os módulos                |
-| `npm.cmd run format`       | Padronizar a formatação                              |
-| `npm.cmd run format:check` | Conferir a formatação                                |
-| `npm.cmd run backup`       | Criar backup consistente em `backend/backups`        |
+| Comando                    | Finalidade                                             |
+| -------------------------- | ------------------------------------------------------ |
+| `npm.cmd run admin:create` | Criar o primeiro dono, com senha escolhida no terminal |
+| `npm.cmd start`            | Iniciar o servidor                                     |
+| `npm.cmd run dev`          | Desenvolvimento com reinício automático                |
+| `npm.cmd test`             | Testar API, permissões, senhas e persistência          |
+| `npm.cmd run test:demo`    | Testar a demonstração                                  |
+| `npm.cmd run build:demo`   | Gerar site para GitHub Pages                           |
+| `npm.cmd run check`        | Verificar sintaxe                                      |
+| `npm.cmd run format`       | Formatar arquivos                                      |
+| `npm.cmd run format:check` | Conferir formatação                                    |
+| `npm.cmd run backup`       | Criar backup consistente                               |
 
-Os dois comandos de formatação exigem `npm.cmd ci`. Em outros terminais, `npm` também funciona.
+Formatação e build da demo exigem `npm.cmd ci`. Em outros terminais, `npm` também funciona.
 
 ## Primeiro atendimento
 
@@ -124,3 +136,6 @@ Os dois comandos de formatação exigem `npm.cmd ci`. Em outros terminais, `npm`
 - [Arquitetura e responsabilidades](docs/ARCHITECTURE.md)
 - [Rotas e contratos da API](docs/API.md)
 - [Desenvolvimento, backup e restauração](docs/DEVELOPMENT.md)
+
+- [Acesso, perfis e segurança](docs/SECURITY.md)
+- [Backend com HTTPS e disco persistente](docs/DEPLOYMENT.md)

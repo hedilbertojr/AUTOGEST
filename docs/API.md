@@ -65,3 +65,22 @@ Transições da OS: `aberta → em_andamento → finalizada → entregue`.
 | 413    | Corpo acima do limite                                          |
 | 415    | Content-Type incompatível                                      |
 | 500    | Falha interna; detalhes apenas no terminal                     |
+
+## Autenticação e usuários
+
+Todas as rotas de negócio exigem uma sessão autenticada. As rotas públicas são `GET /health`, `GET /auth/status` e `POST /auth/login`.
+
+- `POST /auth/login`: `{ "email": "dono@example.com", "senha": "sua senha" }`. Retorna `usuario` e `csrf`, e define o cookie HttpOnly.
+- `GET /auth/session`: consulta usuário e token CSRF da sessão atual.
+- `POST /auth/logout`: revoga a sessão atual.
+- `POST /auth/password`: `{ "senha_atual": "...", "nova_senha": "..." }`; encerra todas as sessões da conta.
+- `GET /usuarios`: lista contas para o administrador, sem hashes de senha.
+- `POST /usuarios`: `nome`, `email`, `papel` (`admin` ou `operador`) e `senha` temporária.
+- `PATCH /usuarios/:id`: atualiza `nome`, `email`, `papel` e/ou `ativo` (booleano).
+- `POST /usuarios/:id/senha`: `{ "senha": "nova senha temporária" }`.
+- `PATCH /ordens/:id/responsavel`: `{ "operador_id": 2 }` ou `null` para remover a atribuição.
+- `GET /auditoria`: últimos 100 eventos administrativos.
+
+Envie o cookie de sessão e o cabeçalho `X-CSRF-Token` nas alterações autenticadas. Sem login: 401. Sem permissão: 403. OS não atribuída ao mecânico: 404. Excesso de tentativas de login: 429.
+
+Uma conta com `trocar_senha=true` só pode consultar sua sessão, trocar a própria senha ou sair. A consulta de ordens pelo operador devolve apenas dados de execução, sem preços ou totais.
