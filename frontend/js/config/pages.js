@@ -1,4 +1,5 @@
 export const pages = {
+  bi: ['BI e resultados', 'Indicadores para decidir com clareza.', 'layout-dashboard'],
   clientes: [
     'Clientes',
     'Relacionamentos bem cuidados, desde o primeiro atendimento.',
@@ -49,6 +50,7 @@ export const pages = {
   auditoria: ['Auditoria', 'Consulte os últimos eventos de acesso e administração.', 'history'],
 };
 export const navigationGroups = [
+  { label: 'Gestão', pages: ['bi'] },
   { label: 'Atendimento', pages: ['clientes', 'veiculos', 'orcamentos', 'ordens'] },
   { label: 'Oficina', pages: ['servicos', 'estoque', 'notas', 'notificacoes'] },
   { label: 'Administração', pages: ['usuarios', 'auditoria'] },

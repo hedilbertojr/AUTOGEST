@@ -10,7 +10,14 @@ export async function api(url, method = 'GET', body) {
         throw Error('Acesso restrito ao administrador.');
       if (method === 'PATCH' && !['em_andamento', 'finalizada'].includes(body?.status))
         throw Error('Operação exclusiva do dono.');
-      const result = await (await demo).api(url, method, body);
+      const runtime = await demo;
+      if (method === 'PATCH' || /^ordens\/\d+$/.test(url)) {
+        const id = Number(url.split('/')[1]);
+        const own = (await runtime.api('ordens')).find((o) => o.id === id && o.operador_id === 2);
+        if (!own) throw Error('Ordem não atribuída à sua conta.');
+      }
+      const raw = await runtime.api(url, method, body);
+      const result = Array.isArray(raw) ? raw.filter((o) => o.operador_id === 2) : raw;
       const clean = (r) => ({
         id: r.id,
         status: r.status,

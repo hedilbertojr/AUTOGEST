@@ -3,6 +3,7 @@ export const isAdmin = () => session.user?.papel === 'admin';
 export const resources = () =>
   isAdmin()
     ? [
+        'bi',
         'clientes',
         'veiculos',
         'servicos',

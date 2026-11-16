@@ -9,3 +9,6 @@ backend/backups/*
 coverage/
 
 dist/
+
+backend/data/
+backend/backups/

@@ -1555,3 +1555,394 @@ textarea {
     scroll-behavior: auto !important;
   }
 }
+
+/* Business intelligence */
+.bi-shell {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+.bi-shell #content {
+  padding: 0;
+}
+.bi-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.bi-top h2 {
+  font-size: 28px;
+  margin: 8px 0;
+}
+.bi-top p {
+  color: var(--muted);
+  margin: 0;
+}
+.bi-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #087f75;
+}
+.bi-actions,
+.bi-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bi-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #dde5e9;
+  border-radius: 14px;
+}
+.bi-filters label,
+.bi-account-filters label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.bi-filters input,
+.bi-filters select,
+.bi-account-filters input,
+.bi-account-filters select {
+  padding: 10px;
+  border: 1px solid #d7e0e5;
+  border-radius: 8px;
+  background: white;
+  min-width: 140px;
+}
+.bi-warning {
+  padding: 12px 16px;
+  border: 1px solid #f2d69c;
+  background: #fff8e9;
+  color: #79541b;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.bi-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid #dce5e8;
+  margin: 24px 0;
+  overflow: auto;
+}
+.bi-tabs button {
+  background: transparent;
+  color: #526473;
+  white-space: nowrap;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 14px 18px;
+}
+.bi-tabs button.selected {
+  color: #087f75;
+  border-color: #087f75;
+  background: #e8f5f1;
+}
+.bi-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.bi-kpi {
+  background: white;
+  padding: 22px;
+  border: 1px solid #dfe7eb;
+  border-radius: 14px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.bi-kpi span {
+  font-size: 12px;
+  color: #5a6c79;
+  font-weight: 600;
+}
+.bi-kpi strong {
+  font-size: 26px;
+  letter-spacing: -1px;
+  color: #142e3d;
+  overflow-wrap: anywhere;
+}
+.bi-kpi small {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #647685;
+}
+.bi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.bi-box {
+  background: white;
+  border: 1px solid #dfe7eb;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 20px;
+  min-width: 0;
+}
+.bi-box h2 {
+  font-size: 16px;
+  margin: 0 0 16px;
+}
+.bi-table {
+  overflow: auto;
+}
+.bi-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.bi-table th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #637784;
+  text-align: left;
+  white-space: nowrap;
+  background: #f6f9fa;
+}
+.bi-table th,
+.bi-table td {
+  padding: 13px 10px;
+  border-bottom: 1px solid #ecf0f2;
+}
+.bi-table td {
+  vertical-align: middle;
+}
+.bi-table td small {
+  display: block;
+  font-size: 10px;
+  color: #71828c;
+  margin-top: 5px;
+}
+.bi-table td button {
+  font-size: 11px;
+  padding: 6px 8px;
+  white-space: nowrap;
+  margin: 2px;
+}
+.bi-chart svg {
+  width: 100%;
+  min-width: 250px;
+  overflow: visible;
+}
+.bi-chart text {
+  font-size: 10px;
+  fill: #667e8b;
+}
+.bi-line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.bi-line-0 {
+  stroke: #0e9484;
+}
+.bi-line-1 {
+  stroke: #6b88ba;
+}
+.bi-axis {
+  stroke: #dfe7eb;
+}
+.bi-legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 11px;
+}
+.bi-key-0 {
+  color: #087f75;
+}
+.bi-key-1 {
+  color: #5578aa;
+}
+.bi-empty {
+  padding: 24px;
+  color: #667e8b;
+  font-size: 13px;
+}
+.bi-method {
+  padding: 20px;
+  background: #edf3f5;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #526976;
+}
+.bi-method summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.bi-account-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.bi-form {
+  display: grid;
+  gap: 16px;
+  padding: 12px;
+  min-width: min(450px, 75vw);
+  max-height: 80vh;
+  overflow: auto;
+}
+.bi-form label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+}
+.bi-form input,
+.bi-form select,
+.bi-form textarea {
+  padding: 11px;
+  border: 1px solid #ccd9df;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.bi-form h2 {
+  font-size: 20px;
+}
+.bi-form .error {
+  color: #b13838;
+}
+.bi-top button,
+.bi-filters button {
+  font-size: 12px;
+}
+.bi-shell [hidden] {
+  display: none !important;
+}
+@media (max-width: 1100px) {
+  .bi-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bi-grid {
+    grid-template-columns: 1fr;
+  }
+  .bi-top {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 600px) {
+  .bi-kpis {
+    gap: 10px;
+  }
+  .bi-kpi {
+    padding: 15px;
+  }
+  .bi-kpi strong {
+    font-size: 21px;
+  }
+  .bi-box {
+    padding: 15px;
+  }
+  .bi-filters {
+    padding: 14px;
+    gap: 10px;
+  }
+  .bi-filters label {
+    flex: 1;
+    min-width: 120px;
+  }
+  .bi-filters input,
+  .bi-filters select {
+    min-width: 0;
+    width: 100%;
+  }
+  .bi-top h2 {
+    font-size: 24px;
+  }
+  .bi-tabs button {
+    padding: 12px;
+  }
+  .bi-top .bi-actions {
+    width: 100%;
+  }
+  .bi-top .bi-actions button {
+    flex: 1;
+  }
+  .bi-table {
+    max-width: 100%;
+  }
+  .bi-form {
+    min-width: 0;
+    width: 100%;
+  }
+}
+@media print {
+  aside,
+  .topbar,
+  #demo-banner,
+  .bi-actions,
+  .bi-filters,
+  .bi-tabs,
+  .bi-account-filters,
+  #new,
+  .bi-method,
+  header button {
+    display: none !important;
+  }
+  body,
+  main,
+  .workspace {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+  .bi-grid {
+    display: block;
+  }
+  .bi-box,
+  .bi-kpi {
+    break-inside: avoid;
+  }
+  .bi-kpis {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .bi-table {
+    overflow: visible;
+  }
+  .bi-table td button {
+    display: none;
+  }
+  table {
+    font-size: 9px !important;
+  }
+  .bi-chart svg {
+    max-height: 180px;
+  }
+}
+
+.bi-tabs {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  max-height: none;
+  padding: 0;
+  flex: none;
+  gap: 4px;
+}
+.bi-tabs button {
+  width: auto;
+  flex: none;
+  min-width: 0;
+}
+.bi-tabs button span {
+  display: inline;
+}

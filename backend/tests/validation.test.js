@@ -24,7 +24,7 @@ test('configuração valida porta e suporta banco em memória', () => {
 test('migrações e catálogo são aplicados em bancos isolados', () => {
   const db = openDatabase(':memory:');
   try {
-    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 4);
+    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 5);
     assert.equal(db.prepare('SELECT count(*) n FROM servicos').get().n, 21);
     assert.equal(db.prepare('PRAGMA foreign_keys').get().foreign_keys, 1);
   } finally {

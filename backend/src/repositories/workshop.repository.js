@@ -1,3 +1,4 @@
+const { businessDate } = require('../finance/dates');
 const { fail } = require('../shared/errors');
 const { integer } = require('../shared/validation');
 function createRepository(db) {
@@ -13,7 +14,12 @@ function createRepository(db) {
     const r = db
       .prepare(`INSERT INTO ${table}(${keys.join(',')}) VALUES(${keys.map(() => '?').join(',')})`)
       .run(...Object.values(data));
-    return get(table, Number(r.lastInsertRowid));
+    const row = get(table, Number(r.lastInsertRowid));
+    if (table === 'estoque' && row.quantidade > 0)
+      db.prepare(
+        "INSERT INTO estoque_movimentos(estoque_id,tipo,quantidade,custo_unitario) VALUES(?,'saldo_inicial',?,?)",
+      ).run(row.id, row.quantidade, row.custo);
+    return row;
   }
   const summaries = {
     veiculos:
@@ -65,11 +71,41 @@ function createRepository(db) {
         )
         .all(id);
     },
+    captureCosts(id) {
+      for (const item of db.prepare('SELECT * FROM itens WHERE orcamento_id=?').all(id)) {
+        const source = get(item.tipo === 'servico' ? 'servicos' : 'estoque', item.referencia_id);
+        db.prepare('UPDATE itens SET custo_unitario=? WHERE id=?').run(
+          source.custo ?? null,
+          item.id,
+        );
+      }
+    },
+    receivable(order) {
+      const quote = get('orcamentos', order.orcamento_id);
+      if (quote.total > 0)
+        db.prepare(
+          "INSERT INTO financeiro_titulos(tipo,natureza,descricao,categoria,valor,competencia,vencimento,ordem_id) VALUES('receber','venda_os',?,'Serviços e materiais',?,?,?,?) ON CONFLICT(ordem_id) DO NOTHING",
+        ).run(
+          'OS #' + order.id,
+          quote.total,
+          businessDate(order.finalizada_em || order.criado_em),
+          businessDate(),
+          order.id,
+        );
+    },
     setStock(id, quantity) {
+      const old = get('estoque', id);
+      db.prepare(
+        "INSERT INTO estoque_movimentos(estoque_id,tipo,quantidade,custo_unitario) VALUES(?,'ajuste',?,?)",
+      ).run(old.id, quantity - old.quantidade, old.custo);
       db.prepare('UPDATE estoque SET quantidade=? WHERE id=?').run(quantity, id);
       return get('estoque', id);
     },
-    decreaseStock(id, quantity) {
+    decreaseStock(id, quantity, orderId) {
+      const old = get('estoque', id);
+      db.prepare(
+        "INSERT INTO estoque_movimentos(estoque_id,ordem_id,tipo,quantidade,custo_unitario) VALUES(?,?,'consumo',?,?)",
+      ).run(old.id, orderId, -quantity, old.custo);
       db.prepare('UPDATE estoque SET quantidade=quantidade-? WHERE id=?').run(quantity, id);
     },
     approveQuote(id) {
@@ -78,6 +114,25 @@ function createRepository(db) {
     },
     setOrderStatus(id, status) {
       db.prepare('UPDATE ordens SET status=? WHERE id=?').run(status, id);
+      const column = {
+        em_andamento: 'iniciada_em',
+        finalizada: 'finalizada_em',
+        entregue: 'entregue_em',
+      }[status];
+      if (column)
+        db.prepare('UPDATE ordens SET ' + column + '=? WHERE id=?').run(
+          new Date().toISOString(),
+          id,
+        );
+      if (status === 'finalizada') {
+        db.prepare('UPDATE ordens SET mecanico_conclusao_id=operador_id WHERE id=?').run(id);
+        const order = get('ordens', id);
+        this.receivable(order);
+        db.prepare('UPDATE financeiro_titulos SET competencia=? WHERE ordem_id=?').run(
+          businessDate(order.finalizada_em),
+          id,
+        );
+      }
       return get('ordens', id);
     },
   };

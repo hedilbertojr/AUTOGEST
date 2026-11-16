@@ -6,7 +6,7 @@ function createOrdersService(repository, transaction) {
       const order = get('ordens', id);
       const next = { aberta: 'em_andamento', em_andamento: 'finalizada', finalizada: 'entregue' };
       if (next[order.status] !== body.status) fail('Transição de status inválida.', 409);
-      return repository.setOrderStatus(order.id, body.status);
+      return transaction(() => repository.setOrderStatus(order.id, body.status));
     },
     createNote(id) {
       return transaction(() => {

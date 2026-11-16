@@ -33,6 +33,7 @@ function createRegistrationsService(repository) {
           nome: str(b.nome, 'Nome', 150),
           categoria: str(b.categoria, 'Categoria', 80),
           preco: money(b.preco),
+          custo: b.custo === undefined || b.custo === '' ? null : money(b.custo),
         });
       if (table === 'estoque') {
         const tipo = b.tipo || 'peca';

@@ -25,7 +25,7 @@ test('demo executa aprovação, OS, estoque, comunicação e comprovante com as 
   assert.equal((await reopened.api('estoque/1')).quantidade, 8);
   reopened.reset();
   assert.equal((await reopened.api('estoque/1')).quantidade, 10);
-  assert.equal((await reopened.api('ordens')).length, 0);
+  assert.equal((await reopened.api('ordens')).length, initialData().ordens.length);
 });
 
 test('demo não grava alterações parciais se faltar estoque ou a persistência falhar', async () => {
@@ -35,7 +35,7 @@ test('demo não grava alterações parciais se faltar estoque ou a persistência
   await api('orcamentos/1/aprovar', 'POST');
   await assert.rejects(() => api('orcamentos/1/gerar-os', 'POST'));
   assert.equal((await api('estoque/1')).quantidade, 1);
-  assert.equal((await api('ordens')).length, 0);
+  assert.equal((await api('ordens')).length, initialData().ordens.length);
   const full = createDemoApi({
     getItem: () => null,
     setItem: () => {
@@ -59,7 +59,7 @@ test('demo atualiza catálogo salvo sem apagar saldos ou orçamentos anteriores'
   const items = await api('estoque');
   assert.equal(items.length, 32);
   assert.equal(items.find((i) => i.codigo === 'FLT-001').quantidade, 3);
-  assert.equal((await api('orcamentos')).length, 1);
+  assert.equal((await api('orcamentos')).length, initialData().orcamentos.length);
   assert.ok((await api('servicos')).some((i) => i.nome === 'Troca de óleo e filtro'));
   const oil = items.find((i) => i.codigo === 'SUP-001'),
     gloves = items.find((i) => i.codigo === 'SUP-013');

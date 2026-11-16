@@ -1,3 +1,7 @@
+import { seedFinanceExamples } from './finance-examples.js';
+import financeModule from '../../../backend/src/finance/service.js';
+import financeRoutes from '../../../backend/src/finance/routes.js';
+import financeDates from '../../../backend/src/finance/dates.js';
 import exampleCatalog from '../../../backend/src/database/seeds/example-catalog.js';
 // Shares business rules with the Node backend; only the persistence adapter changes.
 import registrationsModule from '../../../backend/src/services/registrations.service.js';
@@ -24,7 +28,7 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 
 export function initialData() {
   let id = 0;
-  return {
+  return seedFinanceExamples({
     clientes: [
       { id: 1, nome: 'Marina · Exemplo', telefone: '11000000000', email: 'marina@example.com' },
       { id: 2, nome: 'Rafael · Exemplo', telefone: '21000000000', email: 'rafael@example.com' },
@@ -73,10 +77,17 @@ export function initialData() {
         preco: 3500,
       },
     ],
+    financeiro_titulos: [],
+    financeiro_movimentos: [],
+    estoque_movimentos: [],
+    usuarios: [
+      { id: 2, nome: 'Lucas · Exemplo', papel: 'operador' },
+      { id: 3, nome: 'Ana · Exemplo', papel: 'operador' },
+    ],
     ordens: [],
     notas: [],
     notificacoes: [],
-  };
+  });
 }
 
 export function createDemoApi(storage) {
@@ -112,6 +123,15 @@ export function createDemoApi(storage) {
     item.tipo ??= 'peca';
     item.unidade ??= 'un';
   }
+  for (const key of [
+    'financeiro_titulos',
+    'financeiro_movimentos',
+    'estoque_movimentos',
+    'usuarios',
+  ])
+    data[key] ??= key === 'usuarios' ? defaults.usuarios : [];
+  seedFinanceExamples(data);
+  const { businessDate } = financeDates;
   const { fail } = errors;
   function get(table, id) {
     const record = data[table]?.find((row) => row.id === validation.integer(id, 'ID', 1));
@@ -186,12 +206,46 @@ export function createDemoApi(storage) {
         totals.set(item.referencia_id, (totals.get(item.referencia_id) || 0) + item.quantidade);
       return [...totals].map(([referencia_id, quantidade]) => ({ referencia_id, quantidade }));
     },
+    captureCosts(id) {
+      for (const item of data.itens.filter((i) => i.orcamento_id === id))
+        item.custo_unitario =
+          get(item.tipo === 'servico' ? 'servicos' : 'estoque', item.referencia_id).custo ?? null;
+    },
+    receivable(order) {
+      const q = get('orcamentos', order.orcamento_id);
+      if (q.total > 0 && !data.financeiro_titulos.some((t) => t.ordem_id === order.id))
+        insert('financeiro_titulos', {
+          tipo: 'receber',
+          natureza: 'venda_os',
+          descricao: 'OS #' + order.id,
+          categoria: 'Serviços e materiais',
+          valor: q.total,
+          competencia: businessDate(order.finalizada_em || order.criado_em),
+          vencimento: businessDate(),
+          ordem_id: order.id,
+          cancelado: 0,
+        });
+    },
     setStock(id, quantity) {
+      const old = get('estoque', id);
+      insert('estoque_movimentos', {
+        estoque_id: old.id,
+        tipo: 'ajuste',
+        quantidade: quantity - old.quantidade,
+        custo_unitario: old.custo,
+      });
       const row = get('estoque', id);
       row.quantidade = quantity;
       return row;
     },
-    decreaseStock(id, quantity) {
+    decreaseStock(id, quantity, orderId) {
+      insert('estoque_movimentos', {
+        estoque_id: Number(id),
+        ordem_id: orderId,
+        tipo: 'consumo',
+        quantidade: -quantity,
+        custo_unitario: get('estoque', id).custo,
+      });
       get('estoque', id).quantidade -= quantity;
     },
     approveQuote(id) {
@@ -202,6 +256,18 @@ export function createDemoApi(storage) {
     setOrderStatus(id, status) {
       const row = get('ordens', id);
       row.status = status;
+      const col = {
+        em_andamento: 'iniciada_em',
+        finalizada: 'finalizada_em',
+        entregue: 'entregue_em',
+      }[status];
+      if (col) row[col] = new Date().toISOString();
+      if (status === 'finalizada') {
+        row.mecanico_conclusao_id = row.operador_id ?? null;
+        repository.receivable(row);
+        const t = data.financeiro_titulos.find((t) => t.ordem_id === row.id);
+        if (t) t.competencia = businessDate(row.finalizada_em);
+      }
       return row;
     },
   };
@@ -213,11 +279,31 @@ export function createDemoApi(storage) {
     orders: ordersModule.createOrdersService(repository, transaction),
     communications: communicationsModule.createCommunicationsService(repository),
   });
+  const finance = financeModule.createFinanceService({
+    snapshot: () => data,
+    find: (table, id) => data[table].find((r) => r.id === id),
+    insert,
+    update(table, id, fields) {
+      return Object.assign(get(table, id), fields);
+    },
+    atomic: transaction,
+    audit() {},
+  });
   return {
     async api(url, method = 'GET', body = {}) {
       const before = clone(data);
       try {
-        const result = dispatch(method, url.split('/').filter(Boolean), body);
+        const parsed = new URL(url, 'https://demo.local/');
+        const parts = parsed.pathname.split('/').filter(Boolean);
+        const result = ['bi', 'financeiro'].includes(parts[0])
+          ? financeRoutes.financeRoute(
+              finance,
+              method,
+              parts,
+              body,
+              Object.fromEntries(parsed.searchParams),
+            )
+          : dispatch(method, parts, body);
         // Demo communications are previews; do not expose real outbound contact links.
         if (method === 'POST' && url.endsWith('/whatsapp')) result.link = '';
         if (method !== 'GET') storage?.setItem(STORAGE_KEY, JSON.stringify(data));

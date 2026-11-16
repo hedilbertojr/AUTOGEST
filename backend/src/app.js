@@ -1,4 +1,7 @@
 const http = require('node:http');
+const { createFinanceRepository } = require('./finance/repository');
+const { createFinanceService } = require('./finance/service');
+const { financeRoute } = require('./finance/routes');
 const { openDatabase, transaction } = require('./database/connection');
 const { createRepository } = require('./repositories/workshop.repository');
 const { createRegistrationsService } = require('./services/registrations.service');
@@ -16,6 +19,7 @@ function createApp(config, logger = console) {
   const auth = createAuth(db, config);
   const repository = createRepository(db);
   const atomic = (callback) => transaction(db, callback);
+  const finance = createFinanceService(createFinanceRepository(db, atomic));
   const dispatch = createRouter(repository, {
     registrations: createRegistrationsService(repository),
     quotes: createQuotesService(repository, atomic),
@@ -84,6 +88,22 @@ function createApp(config, logger = console) {
           req.method === 'PATCH'
         )
           return json(res, 200, auth.assign(session, parts[1], body));
+        if (['bi', 'financeiro'].includes(parts[0])) {
+          auth.requireAdmin(session);
+          auth.ready(session);
+          return json(
+            res,
+            req.method === 'POST' ? 201 : 200,
+            financeRoute(
+              finance,
+              req.method,
+              parts,
+              body,
+              Object.fromEntries(url.searchParams),
+              session.user.id,
+            ),
+          );
+        }
         auth.authorize(session, req.method, parts, body);
         let result;
         if (session.user.papel === 'operador' && req.method === 'GET')

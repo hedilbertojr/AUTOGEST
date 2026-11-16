@@ -229,6 +229,40 @@ test('autenticação e permissões completas do dono e do mecânico', async (t) 
     assert.equal((await request(`ordens/${order.id}/nota`, 'POST', {}, mechanic)).status, 403);
   });
 
+  await t.test(
+    'financeiro e BI são exclusivos do administrador e protegidos por CSRF',
+    async () => {
+      assert.equal((await request('bi', 'GET', undefined, mechanic)).status, 403);
+      assert.equal((await request('financeiro/titulos', 'POST', {}, mechanic)).status, 403);
+      assert.equal((await request('bi', 'GET', undefined, admin)).status, 200);
+      assert.equal(
+        (
+          await request(
+            'financeiro/titulos',
+            'POST',
+            {},
+            { cookie: admin.cookie, csrf: 'invalido' },
+          )
+        ).status,
+        403,
+      );
+      const created = await request(
+        'financeiro/titulos',
+        'POST',
+        {
+          natureza: 'despesa_operacional',
+          descricao: 'Despesa via API',
+          categoria: 'Teste',
+          valor: 10,
+          competencia: '2026-01-01',
+          vencimento: '2026-01-01',
+        },
+        admin,
+      );
+      assert.equal(created.status, 201);
+      assert.equal(created.data.valor, 1000);
+    },
+  );
   await t.test('redefinição e desativação encerram sessões imediatamente', async () => {
     assert.equal(
       (await request(`usuarios/${mechanic.user.id}/senha`, 'POST', { senha: firstPassword }, admin))

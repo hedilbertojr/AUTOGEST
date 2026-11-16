@@ -149,3 +149,7 @@ O comando `npm.cmd run seed:examples` acrescenta 32 peças/suprimentos e oito se
 ## Interface e ícones
 
 A identidade visual usa ícones SVG da Lucide, fonte Inter carregada localmente e navegação organizada por área de trabalho. As licenças estão incluídas no projeto. [Detalhes da identidade visual](docs/VISUAL-DESIGN.md).
+
+## BI e resultados
+
+O administrador possui uma aba de BI com demonstrativo gerencial, fluxo de caixa, contas a pagar/receber, baixas parciais, estornos, produtividade por mecânico, consumos e relatórios CSV. Consulte [o guia financeiro](docs/BI.md) para os critérios de cálculo e operação.

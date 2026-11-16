@@ -1,3 +1,4 @@
+import { mountBI, leaveBI } from './features/bi.js';
 import { icon, hydrateIcons } from './core/icons.js';
 import { session, isAdmin, resources } from './core/session.js';
 import { initializeAccess } from './features/access.js';
@@ -27,7 +28,11 @@ function toast(message) {
   toastTimer = setTimeout(() => ($('#toast').hidden = true), 5000);
 }
 async function refresh() {
-  const entries = await Promise.all(resources().map(async (k) => [k, await api(k)]));
+  const entries = await Promise.all(
+    resources()
+      .filter((k) => k !== 'bi')
+      .map(async (k) => [k, await api(k)]),
+  );
   if (!session.user) return;
   state = {
     ...Object.fromEntries(Object.keys(pages).map((k) => [k, []])),
@@ -72,7 +77,7 @@ $('#search').addEventListener('input', (e) => {
   renderTable();
 });
 function render() {
-  if (!resources().includes(page)) page = isAdmin() ? 'clientes' : 'ordens';
+  if (!resources().includes(page)) page = isAdmin() ? 'bi' : 'ordens';
   document
     .querySelectorAll('[data-page]')
     .forEach((b) => (b.hidden = !resources().includes(b.dataset.page)));
@@ -84,6 +89,23 @@ function render() {
           (button) => !button.hidden,
         )),
     );
+  const bi = page === 'bi';
+  $('#metrics').hidden = bi;
+  document.querySelector('.toolbar').hidden = bi;
+  $('#content').closest('.panel').classList.toggle('bi-shell', bi);
+  if (bi) {
+    $('#title').textContent = 'BI e resultados';
+    $('#breadcrumb').textContent = 'BI e resultados';
+    $('#subtitle').textContent = 'Da operação ao resultado: acompanhe sua oficina.';
+    $('#page-icon').innerHTML = icon('layout-dashboard');
+    $('#new').hidden = true;
+    document
+      .querySelectorAll('[data-page]')
+      .forEach((b) => b.classList.toggle('active', b.dataset.page === 'bi'));
+    mountBI($('#content'));
+    return;
+  }
+  leaveBI();
   renderView(state, page, query);
   if (!isAdmin()) $('#new').hidden = true;
 }
@@ -121,7 +143,12 @@ $('#new').onclick = () => {
     html =
       field('nome', 'Serviço') +
       field('categoria', 'Categoria') +
-      field('preco', 'Preço (R$)', 'number', { min: 0, step: '.01' });
+      field('preco', 'Preço (R$)', 'number', { min: 0, step: '.01' }) +
+      field('custo', 'Custo direto estimado (R$)', 'number', {
+        min: 0,
+        step: '.01',
+        optional: true,
+      });
   if (page === 'estoque')
     html =
       field('codigo', 'Código') +
@@ -262,7 +289,7 @@ $('#content').onclick = async (e) => {
 };
 initializeAccess(
   async () => {
-    page = isAdmin() ? 'clientes' : 'ordens';
+    page = isAdmin() ? 'bi' : 'ordens';
     await refresh();
   },
   () => {

@@ -50,8 +50,11 @@ function createQuotesService(repository, transaction) {
           const r = get('estoque', p.referencia_id);
           if (r.quantidade < p.quantidade) fail(`Estoque insuficiente: ${r.nome}.`, 409);
         }
-        for (const p of pecas) repository.decreaseStock(p.referencia_id, p.quantidade);
-        return insert('ordens', { orcamento_id: o.id });
+        repository.captureCosts?.(o.id);
+        const order = insert('ordens', { orcamento_id: o.id });
+        for (const p of pecas) repository.decreaseStock(p.referencia_id, p.quantidade, order.id);
+        repository.receivable?.(order);
+        return order;
       });
     },
   };
