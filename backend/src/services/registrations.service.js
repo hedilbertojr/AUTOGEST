@@ -34,8 +34,12 @@ function createRegistrationsService(repository) {
           categoria: str(b.categoria, 'Categoria', 80),
           preco: money(b.preco),
         });
-      if (table === 'estoque')
+      if (table === 'estoque') {
+        const tipo = b.tipo || 'peca';
+        if (!['peca', 'suprimento'].includes(tipo)) fail('Tipo de estoque inválido.');
         return insert(table, {
+          tipo,
+          unidade: str(b.unidade || 'un', 'Unidade', 30),
           codigo: str(b.codigo, 'Código', 50),
           nome: str(b.nome, 'Nome', 150),
           quantidade: integer(b.quantidade, 'Quantidade'),
@@ -43,6 +47,7 @@ function createRegistrationsService(repository) {
           custo: money(b.custo),
           venda: money(b.venda),
         });
+      }
 
       fail('Cadastro não permitido.', 405);
     },

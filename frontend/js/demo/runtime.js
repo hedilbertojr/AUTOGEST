@@ -1,3 +1,4 @@
+import exampleCatalog from '../../../backend/src/database/seeds/example-catalog.js';
 // Shares business rules with the Node backend; only the persistence adapter changes.
 import registrationsModule from '../../../backend/src/services/registrations.service.js';
 import quotesModule from '../../../backend/src/services/quotes.service.js';
@@ -34,38 +35,13 @@ export function initialData() {
       { id: 2, cliente_id: 2, placa: 'DEF4G56', marca: 'Volkswagen', modelo: 'Polo', ano: 2021 },
       { id: 3, cliente_id: 3, placa: 'GHI7J89', marca: 'Chevrolet', modelo: 'Onix', ano: 2023 },
     ],
-    servicos: Object.entries(seeds.catalogo).flatMap(([categoria, items]) =>
-      items.map(([nome, preco]) => ({ id: ++id, nome, categoria, preco: preco * 100 })),
-    ),
-    estoque: [
-      {
-        id: 1,
-        codigo: 'FLT-001',
-        nome: 'Filtro de óleo',
-        quantidade: 10,
-        minimo: 2,
-        custo: 1500,
-        venda: 3500,
-      },
-      {
-        id: 2,
-        codigo: 'CAB-002',
-        nome: 'Filtro de cabine',
-        quantidade: 2,
-        minimo: 3,
-        custo: 2400,
-        venda: 5500,
-      },
-      {
-        id: 3,
-        codigo: 'ESC-003',
-        nome: 'Abraçadeira de escape',
-        quantidade: 18,
-        minimo: 5,
-        custo: 800,
-        venda: 2000,
-      },
+    servicos: [
+      ...Object.entries(seeds.catalogo).flatMap(([categoria, items]) =>
+        items.map(([nome, preco]) => ({ id: ++id, nome, categoria, preco: preco * 100 })),
+      ),
+      ...exampleCatalog.exampleServices.map((item) => ({ id: ++id, ...item })),
     ],
+    estoque: exampleCatalog.exampleStock.map((item, index) => ({ id: index + 1, ...item })),
     orcamentos: [
       {
         id: 1,
@@ -113,6 +89,28 @@ export function createDemoApi(storage) {
     } catch {
       /* Ignore an obsolete or incomplete local snapshot. */
     }
+  }
+  // Add new examples without resetting balances, prices or visitor-created records.
+  const defaults = initialData();
+  for (const [table, key] of [
+    ['estoque', 'codigo'],
+    ['servicos', 'nome'],
+  ]) {
+    for (const sample of defaults[table]) {
+      const found = data[table].find(
+        (item) => String(item[key]).toLowerCase() === String(sample[key]).toLowerCase(),
+      );
+      if (!found)
+        data[table].push({ ...sample, id: Math.max(0, ...data[table].map((item) => item.id)) + 1 });
+      else if (table === 'estoque') {
+        found.tipo ??= sample.tipo;
+        found.unidade ??= sample.unidade;
+      }
+    }
+  }
+  for (const item of data.estoque) {
+    item.tipo ??= 'peca';
+    item.unidade ??= 'un';
   }
   const { fail } = errors;
   function get(table, id) {
@@ -182,7 +180,9 @@ export function createDemoApi(storage) {
     },
     requiredParts(id) {
       const totals = new Map();
-      for (const item of data.itens.filter((r) => r.orcamento_id === id && r.tipo === 'peca'))
+      for (const item of data.itens.filter(
+        (r) => r.orcamento_id === id && ['peca', 'suprimento'].includes(r.tipo),
+      ))
         totals.set(item.referencia_id, (totals.get(item.referencia_id) || 0) + item.quantidade);
       return [...totals].map(([referencia_id, quantidade]) => ({ referencia_id, quantidade }));
     },

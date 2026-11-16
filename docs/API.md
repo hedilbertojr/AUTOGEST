@@ -84,3 +84,9 @@ Todas as rotas de negócio exigem uma sessão autenticada. As rotas públicas s�
 Envie o cookie de sessão e o cabeçalho `X-CSRF-Token` nas alterações autenticadas. Sem login: 401. Sem permissão: 403. OS não atribuída ao mecânico: 404. Excesso de tentativas de login: 429.
 
 Uma conta com `trocar_senha=true` só pode consultar sua sessão, trocar a própria senha ou sair. A consulta de ordens pelo operador devolve apenas dados de execução, sem preços ou totais.
+
+## Peças e suprimentos
+
+`POST /estoque` também aceita `tipo` (`peca` ou `suprimento`) e `unidade` (até 30 caracteres, como `un`, `par` ou `frasco 1 L`). São opcionais para compatibilidade com cadastros antigos; os padrões são `peca` e `un`.
+
+Nos itens de `POST /orcamentos`, `tipo` pode ser `servico`, `peca` ou `suprimento`. Tanto peças quanto suprimentos usam `referencia_id` da tabela de estoque, com baixa transacional ao gerar a OS. Venda zero é permitida para consumo interno. Quantidades representam unidades ou embalagens inteiras.

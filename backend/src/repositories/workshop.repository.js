@@ -61,7 +61,7 @@ function createRepository(db) {
     requiredParts(id) {
       return db
         .prepare(
-          "SELECT referencia_id, SUM(quantidade) AS quantidade FROM itens WHERE orcamento_id=? AND tipo='peca' GROUP BY referencia_id",
+          "SELECT referencia_id, SUM(quantidade) AS quantidade FROM itens WHERE orcamento_id=? AND tipo IN ('peca','suprimento') GROUP BY referencia_id",
         )
         .all(id);
     },

@@ -72,7 +72,16 @@ export function renderTable(state, page, query) {
     clientes: ['Cliente', 'Telefone', 'E-mail'],
     veiculos: ['Placa', 'Cliente', 'Veículo', 'Ano'],
     servicos: ['Serviço', 'Categoria', 'Preço'],
-    estoque: ['Código / peça', 'Disponível', 'Mínimo', 'Custo', 'Venda', 'Ações'],
+    estoque: [
+      'Código / item',
+      'Tipo',
+      'Unidade',
+      'Disponível',
+      'Mínimo',
+      'Custo',
+      'Venda',
+      'Ações',
+    ],
     orcamentos: ['Orçamento', 'Cliente / placa', 'Total', 'Status', 'Ações'],
     ordens: ['OS', 'Cliente / placa', 'Total', 'Status', 'Ações'],
     notas: ['Número', 'OS', 'Cliente', 'Total', 'Tipo'],
@@ -97,6 +106,8 @@ export function renderTable(state, page, query) {
         if (page === 'estoque')
           c = [
             e(r.codigo) + ' · ' + e(r.nome),
+            badge(r.tipo === 'suprimento' ? 'Suprimento' : 'Peça'),
+            e(r.unidade || 'un'),
             r.quantidade <= r.minimo
               ? `<span class="badge amber">${r.quantidade} · Repor</span>`
               : r.quantidade,

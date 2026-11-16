@@ -11,15 +11,15 @@ function createQuotesService(repository, transaction) {
         if (!Array.isArray(b.itens) || !b.itens.length || b.itens.length > 100)
           fail('Adicione de 1 a 100 itens.');
         const itens = b.itens.map((i) => {
-          if (!i || typeof i !== 'object' || !['servico', 'peca'].includes(i.tipo))
+          if (!i || typeof i !== 'object' || !['servico', 'peca', 'suprimento'].includes(i.tipo))
             fail('Tipo de item inválido.');
-          const r = get(i.tipo === 'peca' ? 'estoque' : 'servicos', i.referencia_id);
+          const r = get(i.tipo === 'servico' ? 'servicos' : 'estoque', i.referencia_id);
           return {
             tipo: i.tipo,
             referencia_id: r.id,
             nome: r.nome,
             quantidade: integer(i.quantidade, 'Quantidade', 1),
-            preco: i.tipo === 'peca' ? r.venda : r.preco,
+            preco: i.tipo === 'servico' ? r.preco : r.venda,
           };
         });
         const total = itens.reduce((s, i) => s + i.preco * i.quantidade, 0);

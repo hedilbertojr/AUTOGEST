@@ -14,10 +14,11 @@ export function createBudgetEditor(state) {
     const tipo = row.querySelector('.item-type').value;
     row.querySelector('.item-ref').innerHTML =
       '<option value="">Selecione…</option>' +
-      state[tipo === 'peca' ? 'estoque' : 'servicos']
+      state[tipo === 'servico' ? 'servicos' : 'estoque']
+        .filter((r) => tipo === 'servico' || (r.tipo || 'peca') === tipo)
         .map(
           (r) =>
-            `<option value="${r.id}">${escapeHtml(r.nome)} · ${reais(tipo === 'peca' ? r.venda : r.preco)}</option>`,
+            `<option value="${r.id}">${escapeHtml(r.nome)} · ${reais(tipo === 'servico' ? r.preco : r.venda)}${tipo === 'servico' ? '' : ' / ' + escapeHtml(r.unidade || 'un') + ' · saldo ' + r.quantidade}</option>`,
         )
         .join('');
     updateTotal();
@@ -26,7 +27,7 @@ export function createBudgetEditor(state) {
     const row = document.createElement('div');
     row.className = 'line-item';
     row.innerHTML =
-      '<select class="item-type" aria-label="Tipo"><option value="servico">Serviço</option><option value="peca">Peça</option></select><select class="item-ref" aria-label="Item" required></select><input class="item-qty" aria-label="Quantidade" type="number" min="1" step="1" value="1" required><button type="button" class="ghost" aria-label="Remover item">×</button>';
+      '<select class="item-type" aria-label="Tipo"><option value="servico">Serviço</option><option value="peca">Peça</option><option value="suprimento">Suprimento</option></select><select class="item-ref" aria-label="Item" required></select><input class="item-qty" aria-label="Quantidade" type="number" min="1" step="1" value="1" required><button type="button" class="ghost" aria-label="Remover item">×</button>';
     $('#items').append(row);
     fillItem(row);
     row.querySelector('.item-type').onchange = () => fillItem(row);
@@ -47,10 +48,10 @@ export function createBudgetEditor(state) {
   function updateTotal() {
     if (!$('#budget-total')) return;
     const total = budgetItems().reduce((s, i) => {
-      const r = state[i.tipo === 'peca' ? 'estoque' : 'servicos'].find(
+      const r = state[i.tipo === 'servico' ? 'servicos' : 'estoque'].find(
         (x) => x.id === i.referencia_id,
       );
-      return s + (r ? (i.tipo === 'peca' ? r.venda : r.preco) * i.quantidade : 0);
+      return s + (r ? (i.tipo === 'servico' ? r.preco : r.venda) * i.quantidade : 0);
     }, 0);
     $('#budget-total').textContent = 'Total estimado: ' + reais(total);
   }

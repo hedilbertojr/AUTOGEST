@@ -139,3 +139,9 @@ Formatação e build da demo exigem `npm.cmd ci`. Em outros terminais, `npm` tam
 
 - [Acesso, perfis e segurança](docs/SECURITY.md)
 - [Backend com HTTPS e disco persistente](docs/DEPLOYMENT.md)
+
+## Catálogo fictício para testar atendimentos
+
+O comando `npm.cmd run seed:examples` acrescenta 32 peças/suprimentos e oito serviços extras, sem alterar registros existentes. A demo online inclui esses exemplos automaticamente, totalizando 29 serviços. Os itens podem ser usados juntos em um orçamento: Serviço (mão de obra), Peça e Suprimento. Suprimentos com venda zero representam consumo interno sem cobrança e também baixam do estoque ao gerar a OS.
+
+[Ver exemplos e instruções](docs/EXAMPLES.md).

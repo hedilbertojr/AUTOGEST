@@ -95,7 +95,9 @@ $('#new').onclick = () => {
   if (page === 'estoque')
     html =
       field('codigo', 'Código') +
-      field('nome', 'Nome da peça') +
+      field('nome', 'Nome do item') +
+      '<label>Tipo<select name="tipo"><option value="peca">Peça</option><option value="suprimento">Suprimento</option></select></label>' +
+      field('unidade', 'Unidade / embalagem', 'text', { value: 'un', max: 30 }) +
       field('quantidade', 'Quantidade', 'number', { min: 0, value: 0 }) +
       field('minimo', 'Estoque mínimo', 'number', { min: 0, value: 0 }) +
       field('custo', 'Custo (R$)', 'number', { min: 0, step: '.01' }) +
@@ -104,7 +106,7 @@ $('#new').onclick = () => {
     html =
       select('cliente_id', 'Cliente', state.clientes, (r) => r.nome) +
       select('veiculo_id', 'Veículo', [], (r) => r.placa) +
-      '<label class="wide">Diagnóstico<textarea name="diagnostico" maxlength="3000" required></textarea></label><div class="wide"><h3>Serviços e peças</h3><div id="items"></div><button type="button" class="secondary" id="add-item">+ Adicionar item</button><div id="budget-total"></div></div>';
+      '<label class="wide">Diagnóstico<textarea name="diagnostico" maxlength="3000" required></textarea></label><div class="wide"><h3>Serviços, peças e suprimentos</h3><p class="note">Mão de obra não possui saldo. Peças e suprimentos baixam do estoque ao gerar a OS. Venda de R$ 0,00 representa consumo interno sem cobrança. Informe quantidades inteiras de unidades ou embalagens.</p><div id="items"></div><button type="button" class="secondary" id="add-item">+ Adicionar item</button><div id="budget-total"></div></div>';
   openModal(pages[page][3], html);
   if (page === 'orcamentos') {
     budgetEditor = createBudgetEditor(state);

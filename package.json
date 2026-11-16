@@ -16,7 +16,8 @@
     "format:check": "prettier --check .",
     "build:demo": "node scripts/build-demo.cjs",
     "test:demo": "node --test frontend/tests/*.test.js",
-    "admin:create": "node scripts/admin.cjs"
+    "admin:create": "node scripts/admin.cjs",
+    "seed:examples": "node scripts/seed-examples.cjs"
   },
   "devDependencies": {
     "esbuild": "0.25.5",
