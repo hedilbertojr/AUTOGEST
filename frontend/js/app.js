@@ -1,3 +1,4 @@
+import { icon, hydrateIcons } from './core/icons.js';
 import { session, isAdmin, resources } from './core/session.js';
 import { initializeAccess } from './features/access.js';
 import { createUser, userAction, assignOrder } from './features/users.js';
@@ -7,9 +8,10 @@ import { createBudgetEditor } from './features/budget-editor.js';
 import { $ } from './core/dom.js';
 import { api } from './core/api.js';
 import { escapeHtml, reais, labels } from './core/format.js';
-import { pages } from './config/pages.js';
+import { pages, navigationGroups } from './config/pages.js';
 import { renderTable as drawTable } from './components/table.js';
 import { field, select } from './components/fields.js';
+hydrateIcons();
 let budgetEditor;
 let state = Object.fromEntries(Object.keys(pages).map((key) => [key, []])),
   page = 'clientes',
@@ -33,8 +35,28 @@ async function refresh() {
   };
   render();
 }
-$('#nav').innerHTML = Object.entries(pages)
-  .map(([k, p]) => `<button data-page="${k}"><span>${p[2]}</span>${p[0]}</button>`)
+$('#nav').innerHTML = navigationGroups
+  .map(
+    (group) =>
+      '<section class="nav-group" aria-label="' +
+      group.label +
+      '"><p class="nav-group-label">' +
+      group.label +
+      '</p>' +
+      group.pages
+        .map(
+          (key) =>
+            '<button type="button" data-page="' +
+            key +
+            '">' +
+            icon(pages[key][2]) +
+            '<span>' +
+            pages[key][0] +
+            '</span></button>',
+        )
+        .join('') +
+      '</section>',
+  )
   .join('');
 $('#nav').addEventListener('click', (e) => {
   const b = e.target.closest('[data-page]');
@@ -54,6 +76,14 @@ function render() {
   document
     .querySelectorAll('[data-page]')
     .forEach((b) => (b.hidden = !resources().includes(b.dataset.page)));
+  document
+    .querySelectorAll('.nav-group')
+    .forEach(
+      (group) =>
+        (group.hidden = ![...group.querySelectorAll('[data-page]')].some(
+          (button) => !button.hidden,
+        )),
+    );
   renderView(state, page, query);
   if (!isAdmin()) $('#new').hidden = true;
 }
@@ -247,8 +277,8 @@ initializeAccess(
 if (isDemo) {
   $('#demo-banner').hidden = false;
   document.querySelector('aside footer').innerHTML =
-    '<span class="dot"></span> Portfólio interativo<small>Dados fictícios neste navegador</small>';
-  document.querySelector('.local').textContent = '● Modo demonstração';
+    '<div class="footer-status"><span class="dot"></span>Modo demonstração</div><small>Explore com dados de exemplo</small>';
+  document.querySelector('.local').textContent = 'Demonstração';
   $('#reset-demo').onclick = async () => {
     if (!window.confirm('Restaurar os exemplos? Seus testes neste navegador serão removidos.'))
       return;

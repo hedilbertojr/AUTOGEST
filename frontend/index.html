@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AutoGest · Gestão de oficina</title>
+    <meta name="theme-color" content="#101d2b" />
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
     <link rel="stylesheet" href="./css/style.css" />
     <script src="./js/app.js" type="module"></script>
   </head>
@@ -12,8 +14,9 @@
       <p>Preparando acesso…</p>
     </section>
     <aside>
-      <a class="brand" href="./"
-        >⚙ <span>AutoGest<small>GESTÃO DE OFICINA</small></span></a
+      <a class="brand" href="./" aria-label="AutoGest — início"
+        ><span class="logo-mark" data-icon="wrench"></span
+        ><span class="wordmark">AutoGest<small>GESTÃO AUTOMOTIVA</small></span></a
       >
       <nav aria-label="Menu principal" id="nav"></nav>
       <footer>
@@ -22,48 +25,81 @@
     </aside>
     <div class="workspace">
       <header>
-        <span>OFICINA / <b id="breadcrumb">CLIENTES</b></span
-        ><span class="local">● SQLite local</span>
+        <div class="breadcrumb-trail">
+          <span data-icon="layout-dashboard"></span><span>Área de trabalho</span
+          ><span class="breadcrumb-chevron" data-icon="chevron-right"></span
+          ><b id="breadcrumb">Clientes</b>
+        </div>
+        <span class="local">Ambiente local</span>
         <div class="account-controls">
-          <span id="account-name"></span
-          ><button type="button" id="change-password" class="ghost">Alterar senha</button
-          ><button type="button" id="logout" class="secondary">Sair</button>
+          <span id="account-avatar" class="avatar" aria-hidden="true">AG</span
+          ><span id="account-name"></span
+          ><button
+            type="button"
+            id="change-password"
+            class="ghost"
+            aria-label="Alterar minha senha"
+            title="Alterar minha senha"
+          >
+            <span data-icon="key-round"></span
+            ><span class="button-label">Alterar senha</span></button
+          ><button
+            type="button"
+            id="logout"
+            class="secondary"
+            aria-label="Sair da conta"
+            title="Sair da conta"
+          >
+            <span data-icon="log-out"></span><span class="button-label">Sair</span>
+          </button>
         </div>
       </header>
       <main>
         <section class="demo-banner" id="demo-banner" hidden>
+          <span class="demo-icon" data-icon="layout-dashboard"></span>
           <div>
             <strong>Explore o AutoGest</strong
             ><span>Demonstração com dados fictícios. Alterações ficam apenas neste navegador.</span>
           </div>
-          <button id="reset-demo" class="secondary" type="button">Restaurar demonstração</button>
+          <button id="reset-demo" class="secondary" type="button">
+            <span data-icon="rotate-ccw"></span>Restaurar demonstração
+          </button>
         </section>
         <div class="heading">
-          <div>
-            <p class="eyebrow">CONTROLE DA OPERAÇÃO</p>
-            <h1 id="title">Clientes</h1>
-            <p id="subtitle"></p>
+          <div class="heading-copy">
+            <span class="page-heading-icon" id="page-icon"></span>
+            <div>
+              <p class="eyebrow">GESTÃO DA OFICINA</p>
+              <h1 id="title">Clientes</h1>
+              <p id="subtitle"></p>
+            </div>
           </div>
-          <button id="new">+ Novo cliente</button>
+          <button id="new"><span data-icon="plus"></span>Novo cliente</button>
         </div>
         <section class="metrics" id="metrics" aria-label="Indicadores"></section>
         <section class="panel">
           <div class="toolbar">
-            <h2 id="list-title">Cadastros</h2>
+            <div class="panel-heading">
+              <h2 id="list-title">Cadastros</h2>
+              <span class="count-badge" id="row-count">0</span>
+            </div>
             <label class="search"
-              >Buscar <input id="search" type="search" placeholder="Nome, placa, código…"
+              ><span class="sr-only">Buscar</span><span data-icon="search"></span
+              ><input id="search" type="search" placeholder="Nome, placa, código…"
             /></label>
           </div>
           <div id="content" aria-live="polite"></div>
         </section>
-        <p class="footnote">AutoGest · Organização para cuidar de cada detalhe.</p>
+        <p class="footnote">AutoGest · Mais organização em cada atendimento.</p>
       </main>
     </div>
     <dialog id="modal">
       <form id="form">
         <div class="dialog-heading">
           <h2 id="modal-title"></h2>
-          <button type="button" class="ghost" id="close" aria-label="Fechar">✕</button>
+          <button type="button" class="ghost" id="close" aria-label="Fechar">
+            <span data-icon="x"></span>
+          </button>
         </div>
         <div id="fields"></div>
         <p id="form-error" role="alert"></p>

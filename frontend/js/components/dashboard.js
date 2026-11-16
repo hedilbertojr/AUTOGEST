@@ -1,3 +1,5 @@
+import { icon } from '../core/icons.js';
+import { escapeHtml } from '../core/format.js';
 import { $ } from '../core/dom.js';
 import { pages } from '../config/pages.js';
 import { renderTable } from './table.js';
@@ -5,11 +7,24 @@ import { isAdmin } from '../core/session.js';
 export function renderView(state, page, query) {
   const p = pages[page];
   $('#title').textContent = p[0];
-  $('#breadcrumb').textContent = p[0].toUpperCase();
+  $('#breadcrumb').textContent = p[0];
   $('#subtitle').textContent = p[1];
   $('#new').hidden = !p[3];
-  $('#new').textContent = '+ ' + (p[3] || '');
-  $('#list-title').textContent = page === 'notas' ? 'Comprovantes internos' : p[0] + ' cadastrados';
+  $('#new').innerHTML = icon('plus') + '<span>' + escapeHtml(p[3] || '') + '</span>';
+  $('#page-icon').innerHTML = icon(p[2]);
+  const listTitles = {
+    clientes: 'Clientes cadastrados',
+    veiculos: 'Veículos da oficina',
+    servicos: 'Catálogo de serviços',
+    estoque: 'Itens do estoque',
+    orcamentos: 'Orçamentos recentes',
+    ordens: 'Ordens de serviço',
+    notas: 'Comprovantes internos',
+    notificacoes: 'Histórico de comunicações',
+    usuarios: 'Usuários da oficina',
+    auditoria: 'Eventos de auditoria',
+  };
+  $('#list-title').textContent = listTitles[page];
   document.querySelectorAll('[data-page]').forEach((b) => {
     b.classList.toggle('active', b.dataset.page === page);
     b.setAttribute('aria-current', b.dataset.page === page ? 'page' : 'false');
@@ -37,8 +52,8 @@ export function renderView(state, page, query) {
       ];
   $('#metrics').innerHTML = metrics
     .map(
-      ([n, t, d]) =>
-        `<article class="metric"><span>${t}</span><strong>${n}</strong><small>${d}</small></article>`,
+      ([n, t, d], index) =>
+        `<article class="metric metric-${index}"><div class="metric-top"><span>${t}</span><span class="metric-icon">${icon(index === 0 ? p[2] : index === 1 ? 'clipboard-list' : isAdmin() ? 'package-search' : 'circle-check')}</span></div><strong>${n}</strong><small>${d}</small></article>`,
     )
     .join('');
   renderTable(state, page, query);

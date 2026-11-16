@@ -1,15 +1,42 @@
+import { icon } from '../core/icons.js';
 import { isAdmin } from '../core/session.js';
 import { isDemo } from '../core/mode.js';
 import { usersTable } from '../features/users.js';
 import { $ } from '../core/dom.js';
 import { escapeHtml, reais, labels, badge } from '../core/format.js';
 import { pages } from '../config/pages.js';
+const actionIcons = {
+  detail: 'eye',
+  whatsapp: 'message-circle',
+  approve: 'check',
+  order: 'arrow-up-right',
+  status: 'play',
+  note: 'receipt-text',
+  stock: 'sliders-horizontal',
+  reopen: 'external-link',
+  assign: 'user-round-check',
+};
 const button = (action, id, label) =>
-  `<button type="button" data-action="${action}" data-id="${id}">${label}</button>`;
+  '<button type="button" class="action-' +
+  action +
+  '" data-action="' +
+  action +
+  '" data-id="' +
+  id +
+  '">' +
+  icon(
+    action === 'status' && /inaliz/.test(label)
+      ? 'circle-check'
+      : actionIcons[action] || 'arrow-right',
+  ) +
+  '<span>' +
+  label +
+  '</span></button>';
 export function renderTable(state, page, query) {
   const rows = state[page].filter((r) =>
     Object.values(r).some((v) => String(v).toLocaleLowerCase('pt-BR').includes(query)),
   );
+  $('#row-count').textContent = rows.length;
   if (page === 'usuarios') {
     $('#content').innerHTML = usersTable(rows);
     return;
@@ -89,7 +116,7 @@ export function renderTable(state, page, query) {
   };
   if (!rows.length) {
     $('#content').innerHTML =
-      `<div class="empty"><strong>${query ? 'Nenhum resultado encontrado' : 'Tudo pronto para começar'}</strong><p>${query ? 'Tente outro termo de busca.' : pages[page][3] ? 'Use o botão acima para adicionar o primeiro registro.' : 'Os registros aparecerão aqui conforme você avança no atendimento.'}</p></div>`;
+      `<div class="empty"><span class="empty-icon">${icon(pages[page][2])}</span><strong>${query ? 'Nenhum resultado encontrado' : 'Tudo pronto para começar'}</strong><p>${query ? 'Tente outro termo de busca.' : pages[page][3] ? 'Use o botão acima para adicionar o primeiro registro.' : 'Os registros aparecerão aqui conforme você avança no atendimento.'}</p></div>`;
     return;
   }
   $('#content').innerHTML =

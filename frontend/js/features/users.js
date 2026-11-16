@@ -1,3 +1,4 @@
+import { icon } from '../core/icons.js';
 import { api } from '../core/api.js';
 import { escapeHtml } from '../core/format.js';
 import { isDemo } from '../core/mode.js';
@@ -5,7 +6,7 @@ import { session } from '../core/session.js';
 
 function editor(title, html, submit) {
   const dialog = document.createElement('dialog');
-  dialog.innerHTML = `<form class="user-form"><div class="dialog-heading"><h2>${escapeHtml(title)}</h2><button type="button" class="ghost" data-close aria-label="Fechar">✕</button></div>${html}<p class="user-error" role="alert"></p><div class="dialog-actions"><button type="button" class="secondary" data-close>Cancelar</button><button type="submit">Salvar</button></div></form>`;
+  dialog.innerHTML = `<form class="user-form"><div class="dialog-heading"><h2>${escapeHtml(title)}</h2><button type="button" class="ghost" data-close aria-label="Fechar">${icon('x')}</button></div>${html}<p class="user-error" role="alert"></p><div class="dialog-actions"><button type="button" class="secondary" data-close>Cancelar</button><button type="submit">Salvar</button></div></form>`;
   document.body.append(dialog);
   dialog.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => dialog.close()));
   dialog.onclose = () => dialog.remove();
@@ -102,7 +103,7 @@ export function usersTable(rows) {
     rows
       .map(
         (u) =>
-          `<tr><td>${escapeHtml(u.nome)}</td><td>${escapeHtml(u.email)}</td><td>${u.papel === 'admin' ? 'Administrador' : 'Mecânico'}</td><td>${u.ativo ? 'Ativa' : 'Desativada'}${u.trocar_senha ? ' · Senha temporária' : ''}</td><td><div class="actions"><button data-action="user-edit" data-id="${u.id}">Editar</button>${u.id !== session.user.id ? `<button data-action="user-toggle" data-id="${u.id}">${u.ativo ? 'Desativar' : 'Reativar'}</button><button data-action="user-password" data-id="${u.id}">Redefinir senha</button>` : ''}</div></td></tr>`,
+          `<tr><td>${escapeHtml(u.nome)}</td><td>${escapeHtml(u.email)}</td><td>${u.papel === 'admin' ? 'Administrador' : 'Mecânico'}</td><td>${u.ativo ? 'Ativa' : 'Desativada'}${u.trocar_senha ? ' · Senha temporária' : ''}</td><td><div class="actions"><button data-action="user-edit" data-id="${u.id}">${icon('pencil')}Editar</button>${u.id !== session.user.id ? `<button data-action="user-toggle" data-id="${u.id}">${icon(u.ativo ? 'ban' : 'circle-check')}${u.ativo ? 'Desativar' : 'Reativar'}</button><button data-action="user-password" data-id="${u.id}">${icon('key-round')}Redefinir senha</button>` : ''}</div></td></tr>`,
       )
       .join('') +
     '</tbody></table></div>'

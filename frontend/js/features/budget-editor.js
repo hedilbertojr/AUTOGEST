@@ -1,3 +1,4 @@
+import { icon } from '../core/icons.js';
 import { $ } from '../core/dom.js';
 import { escapeHtml, reais } from '../core/format.js';
 export function createBudgetEditor(state) {
@@ -27,7 +28,9 @@ export function createBudgetEditor(state) {
     const row = document.createElement('div');
     row.className = 'line-item';
     row.innerHTML =
-      '<select class="item-type" aria-label="Tipo"><option value="servico">Serviço</option><option value="peca">Peça</option><option value="suprimento">Suprimento</option></select><select class="item-ref" aria-label="Item" required></select><input class="item-qty" aria-label="Quantidade" type="number" min="1" step="1" value="1" required><button type="button" class="ghost" aria-label="Remover item">×</button>';
+      '<select class="item-type" aria-label="Tipo"><option value="servico">Serviço</option><option value="peca">Peça</option><option value="suprimento">Suprimento</option></select><select class="item-ref" aria-label="Item" required></select><input class="item-qty" aria-label="Quantidade" type="number" min="1" step="1" value="1" required><button type="button" class="ghost" aria-label="Remover item">' +
+      icon('x') +
+      '</button>';
     $('#items').append(row);
     fillItem(row);
     row.querySelector('.item-type').onchange = () => fillItem(row);

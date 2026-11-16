@@ -145,3 +145,7 @@ Formatação e build da demo exigem `npm.cmd ci`. Em outros terminais, `npm` tam
 O comando `npm.cmd run seed:examples` acrescenta 32 peças/suprimentos e oito serviços extras, sem alterar registros existentes. A demo online inclui esses exemplos automaticamente, totalizando 29 serviços. Os itens podem ser usados juntos em um orçamento: Serviço (mão de obra), Peça e Suprimento. Suprimentos com venda zero representam consumo interno sem cobrança e também baixam do estoque ao gerar a OS.
 
 [Ver exemplos e instruções](docs/EXAMPLES.md).
+
+## Interface e ícones
+
+A identidade visual usa ícones SVG da Lucide, fonte Inter carregada localmente e navegação organizada por área de trabalho. As licenças estão incluídas no projeto. [Detalhes da identidade visual](docs/VISUAL-DESIGN.md).

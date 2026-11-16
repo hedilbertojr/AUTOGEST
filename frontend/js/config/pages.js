@@ -1,22 +1,55 @@
 export const pages = {
-  usuarios: ['Usuários', 'Gerencie os acessos do dono e da equipe.', '♙', 'Novo usuário'],
-  auditoria: ['Auditoria', 'Últimos eventos de acesso e administração.', '▤'],
-  clientes: ['Clientes', 'Pessoas que confiam no trabalho da sua oficina.', '♙', 'Novo cliente'],
-  veiculos: ['Veículos', 'Cada veículo conectado ao seu proprietário.', '◇', 'Novo veículo'],
-  servicos: ['Serviços', 'Seu catálogo de serviços e preços de referência.', '⚒', 'Novo serviço'],
-  estoque: [
-    'Estoque',
-    'Peças e suprimentos para venda ou consumo nos serviços.',
-    '▦',
-    'Adicionar item',
+  clientes: [
+    'Clientes',
+    'Relacionamentos bem cuidados, desde o primeiro atendimento.',
+    'users-round',
+    'Novo cliente',
+  ],
+  veiculos: [
+    'Veículos',
+    'Histórico e identificação dos veículos da sua oficina.',
+    'car-front',
+    'Novo veículo',
   ],
   orcamentos: [
     'Orçamentos',
-    'Do diagnóstico à aprovação, tudo em um lugar.',
-    '▤',
+    'Transforme diagnósticos em propostas claras para o cliente.',
+    'file-text',
     'Novo orçamento',
   ],
-  ordens: ['Ordens de serviço', 'Acompanhe cada etapa do trabalho na oficina.', '⚙'],
-  notas: ['Comprovantes', 'Registros internos dos serviços realizados.', '▧'],
-  notificacoes: ['Comunicações', 'Histórico dos links de WhatsApp preparados.', '✉'],
+  ordens: [
+    'Ordens de serviço',
+    'Do início à entrega: cada serviço no seu lugar.',
+    'clipboard-list',
+  ],
+  servicos: [
+    'Serviços',
+    'Um catálogo organizado para valorizar sua mão de obra.',
+    'wrench',
+    'Novo serviço',
+  ],
+  estoque: [
+    'Estoque',
+    'Peças e suprimentos disponíveis para o próximo atendimento.',
+    'boxes',
+    'Adicionar item',
+  ],
+  notas: ['Comprovantes', 'Consulte os registros dos serviços realizados.', 'receipt-text'],
+  notificacoes: [
+    'Comunicações',
+    'Acompanhe as mensagens preparadas para seus clientes.',
+    'messages-square',
+  ],
+  usuarios: [
+    'Usuários',
+    'Gerencie os acessos do dono e da equipe.',
+    'shield-check',
+    'Novo usuário',
+  ],
+  auditoria: ['Auditoria', 'Consulte os últimos eventos de acesso e administração.', 'history'],
 };
+export const navigationGroups = [
+  { label: 'Atendimento', pages: ['clientes', 'veiculos', 'orcamentos', 'ordens'] },
+  { label: 'Oficina', pages: ['servicos', 'estoque', 'notas', 'notificacoes'] },
+  { label: 'Administração', pages: ['usuarios', 'auditoria'] },
+];

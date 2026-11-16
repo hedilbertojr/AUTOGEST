@@ -6,6 +6,8 @@ const types = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.svg': 'image/svg+xml',
+  '.woff2': 'font/woff2',
+  '.txt': 'text/plain; charset=utf-8',
 };
 async function serveStatic(req, res, pathname, root) {
   if (!['GET', 'HEAD'].includes(req.method)) fail('Método não permitido.', 405);
