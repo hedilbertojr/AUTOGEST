@@ -651,3 +651,18 @@ textarea {
     padding: 26px;
   }
 }
+
+.stock-table {
+  min-width: 920px;
+}
+.stock-table th,
+.stock-table td {
+  padding: 14px 12px;
+}
+.stock-table td:first-child {
+  min-width: 190px;
+}
+.stock-table th,
+.stock-table td:not(:first-child) {
+  white-space: nowrap;
+}

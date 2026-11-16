@@ -93,7 +93,9 @@ export function renderTable(state, page, query) {
     return;
   }
   $('#content').innerHTML =
-    '<div class="table-wrap"><table><thead><tr>' +
+    '<div class="table-wrap"><table' +
+    (page === 'estoque' ? ' class="stock-table"' : '') +
+    '><thead><tr>' +
     cols[page].map((c) => `<th scope="col">${c}</th>`).join('') +
     '</tr></thead><tbody>' +
     rows
