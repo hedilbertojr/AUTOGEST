@@ -1,0 +1,77 @@
+CREATE TABLE IF NOT EXISTS clientes(
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  telefone TEXT NOT NULL,
+  email TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS veiculos(
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id),
+  placa TEXT NOT NULL UNIQUE,
+  marca TEXT NOT NULL,
+  modelo TEXT NOT NULL,
+  ano INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS servicos(
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  categoria TEXT NOT NULL,
+  preco INTEGER NOT NULL CHECK(preco>=0)
+);
+
+CREATE TABLE IF NOT EXISTS estoque(
+  id INTEGER PRIMARY KEY,
+  codigo TEXT NOT NULL UNIQUE,
+  nome TEXT NOT NULL,
+  quantidade INTEGER NOT NULL CHECK(quantidade>=0),
+  minimo INTEGER NOT NULL CHECK(minimo>=0),
+  custo INTEGER NOT NULL CHECK(custo>=0),
+  venda INTEGER NOT NULL CHECK(venda>=0)
+);
+
+CREATE TABLE IF NOT EXISTS orcamentos(
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id),
+  veiculo_id INTEGER NOT NULL REFERENCES veiculos(id),
+  diagnostico TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pendente',
+  total INTEGER NOT NULL,
+  criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS itens(
+  id INTEGER PRIMARY KEY,
+  orcamento_id INTEGER NOT NULL REFERENCES orcamentos(id),
+  tipo TEXT NOT NULL,
+  referencia_id INTEGER NOT NULL,
+  nome TEXT NOT NULL,
+  quantidade INTEGER NOT NULL CHECK(quantidade>0),
+  preco INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ordens(
+  id INTEGER PRIMARY KEY,
+  orcamento_id INTEGER NOT NULL UNIQUE REFERENCES orcamentos(id),
+  status TEXT NOT NULL DEFAULT 'aberta',
+  criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS notas(
+  id INTEGER PRIMARY KEY,
+  ordem_id INTEGER NOT NULL UNIQUE REFERENCES ordens(id),
+  total INTEGER NOT NULL,
+  criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS notificacoes(
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id),
+  canal TEXT NOT NULL,
+  mensagem TEXT NOT NULL,
+  link TEXT NOT NULL,
+  status TEXT NOT NULL,
+  criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+

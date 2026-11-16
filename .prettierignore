@@ -1,0 +1,7 @@
+node_modules
+backend/data
+backend/backups
+package-lock.json
+backend/package-lock.json
+
+dist

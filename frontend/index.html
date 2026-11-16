@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AutoGest · Gestão de oficina</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <script src="./js/app.js" type="module"></script>
+  </head>
+  <body>
+    <aside>
+      <a class="brand" href="./"
+        >⚙ <span>AutoGest<small>GESTÃO DE OFICINA</small></span></a
+      >
+      <nav aria-label="Menu principal" id="nav"></nav>
+      <footer>
+        <span class="dot"></span> Operação local<small>Seus dados nesta oficina</small>
+      </footer>
+    </aside>
+    <div class="workspace">
+      <header>
+        <span>OFICINA / <b id="breadcrumb">CLIENTES</b></span
+        ><span class="local">● SQLite local</span>
+      </header>
+      <main>
+        <section class="demo-banner" id="demo-banner" hidden>
+          <div>
+            <strong>Explore o AutoGest</strong
+            ><span>Demonstração com dados fictícios. Alterações ficam apenas neste navegador.</span>
+          </div>
+          <button id="reset-demo" class="secondary" type="button">Restaurar demonstração</button>
+        </section>
+        <div class="heading">
+          <div>
+            <p class="eyebrow">CONTROLE DA OPERAÇÃO</p>
+            <h1 id="title">Clientes</h1>
+            <p id="subtitle"></p>
+          </div>
+          <button id="new">+ Novo cliente</button>
+        </div>
+        <section class="metrics" id="metrics" aria-label="Indicadores"></section>
+        <section class="panel">
+          <div class="toolbar">
+            <h2 id="list-title">Cadastros</h2>
+            <label class="search"
+              >Buscar <input id="search" type="search" placeholder="Nome, placa, código…"
+            /></label>
+          </div>
+          <div id="content" aria-live="polite"></div>
+        </section>
+        <p class="footnote">AutoGest · Organização para cuidar de cada detalhe.</p>
+      </main>
+    </div>
+    <dialog id="modal">
+      <form id="form">
+        <div class="dialog-heading">
+          <h2 id="modal-title"></h2>
+          <button type="button" class="ghost" id="close" aria-label="Fechar">✕</button>
+        </div>
+        <div id="fields"></div>
+        <p id="form-error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancel">Cancelar</button
+          ><button type="submit" id="save">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" role="status" hidden></div>
+  </body>
+</html>
