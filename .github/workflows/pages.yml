@@ -19,8 +19,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Importar fontes na primeira publicação
-        if: ${{ hashFiles('project-source.zip') != '' && hashFiles('package.json') == '' }}
+      - name: Importar atualização enviada pelo navegador
+        if: ${{ hashFiles('project-source.zip') != '' }}
         run: |
           unzip -q -o project-source.zip
           rm project-source.zip
